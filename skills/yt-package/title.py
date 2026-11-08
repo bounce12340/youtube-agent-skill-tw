@@ -29,6 +29,7 @@ _LIB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "_lib")
 if _LIB not in sys.path:
     sys.path.insert(0, _LIB)
 
+from markets import MarketError, flag_terms, get_market, pop_market  # noqa: E402
 from zhtext import (  # noqa: E402
     cjk_chars,
     display_width,
@@ -82,29 +83,45 @@ def _cover_overlap(title: str, cover: str) -> list[str]:
     return kept[:8]
 
 
-def check(title: str, cover: str | None = None) -> dict:
+def check(title: str, cover: str | None = None, market: str = "tw") -> dict:
+    profile = get_market(market)
+    if profile["id"] == "tw":
+        desktop_w, mobile_w, cover_limit, hard_chars = DESKTOP_W, MOBILE_W, COVER_W, HARD_CHARS
+        front_bad = FRONT_BAD
+        vague_zh = None
+    else:
+        layout = profile["layout"]
+        desktop_w = layout["desktop_width"]
+        mobile_w = layout["mobile_width"]
+        cover_limit = layout["cover_width"]
+        hard_chars = layout["youtube_title_chars"]
+        front_bad = tuple(profile["front_bad"])
+        vague_zh = tuple(profile["vague"])
     text = title.strip()
     issues: list[tuple[str, str]] = []
     good: list[str] = []
     chars = len(text)
     width = display_width(text)
-    if chars > HARD_CHARS:
-        issues.append(("length", f"{chars} 個字元，超過平台標題硬上限 {HARD_CHARS}"))
-    elif width > DESKTOP_W:
-        issues.append(("length", f"顯示寬度 {width}，桌面搜尋大約在 {DESKTOP_W} 截斷"))
+    if chars > hard_chars:
+        issues.append((
+            "length",
+            f"{chars} 個字元，超過 YouTube 標題硬上限 {hard_chars}。這個上限只套在 YouTube",
+        ))
+    elif width > desktop_w:
+        issues.append(("length", f"顯示寬度 {width}，桌面搜尋大約在 {desktop_w} 截斷"))
     else:
         good.append(f"顯示寬度 {width}，字元 {chars}，沒超過桌面近似上限")
-    if width > MOBILE_W:
-        head = truncate_display(text, MOBILE_W)
+    if width > mobile_w:
+        head = truncate_display(text, mobile_w)
         issues.append(("mobile", f"手機大約只看得到「{head}」，確認主詞還在"))
     else:
-        good.append(f"顯示寬度 {width}，手機寬度 {MOBILE_W} 以內")
+        good.append(f"顯示寬度 {width}，手機寬度 {mobile_w} 以內")
     caps = [word for word in re.findall(r"[A-Za-z]+", text) if len(word) > 2 and word.isupper()]
     if len(caps) > 2:
         issues.append(("shouting", f"{len(caps)} 個全大寫英文單字，超過兩個就像垃圾訊息"))
     elif caps:
         good.append(f"{len(caps)} 個全大寫英文單字，還在強調範圍內")
-    vague = vague_hits(text)
+    vague = vague_hits(text) if vague_zh is None else vague_hits(text, vague_zh)
     if vague:
         issues.append(("vague", f"{'、'.join(vague)}：換成數字、名字或日期"))
     if has_figure(text):
@@ -114,7 +131,7 @@ def check(title: str, cover: str | None = None) -> dict:
     if text.endswith(("?", "？")):
         good.append("標題是一個開放問題")
     lowered = text.lower()
-    if any(lowered.startswith(prefix) for prefix in FRONT_BAD):
+    if any(lowered.startswith(prefix) for prefix in front_bad):
         issues.append(("front-load", "開頭是寒暄或「分享一下」，主詞沒有放前面"))
     else:
         first_words = [word.lower() for word in latin_words(text)[:3]]
@@ -129,11 +146,11 @@ def check(title: str, cover: str | None = None) -> dict:
             good.append("封面和標題用的是不同的詞")
         cover_w = display_width(cover_text)
         cover_words = latin_words(cover_text)
-        if cover_w > COVER_W or len(cover_words) > 4:
+        if cover_w > cover_limit or len(cover_words) > 4:
             issues.append((
                 "cover-length",
                 f"封面顯示寬度 {cover_w}、英文 {len(cover_words)} 個單字。"
-                f"直式封面大約 {COVER_W}（8 個中文字）或 4 個英文單字以內",
+                f"直式封面大約 {cover_limit} 或 4 個英文單字以內。這是可編輯預設",
             ))
         else:
             good.append(f"封面顯示寬度 {cover_w}，手機上還讀得完")
@@ -145,6 +162,9 @@ def check(title: str, cover: str | None = None) -> dict:
         "score": score,
         "issues": issues,
         "good": good,
+        "market": profile["id"],
+        "locale": profile["locale"],
+        "term_flags": flag_terms(text if not cover else text + "\n" + cover.strip(), profile["id"]),
     }
 
 
@@ -165,17 +185,21 @@ def _flag(args: list[str], name: str) -> str | None:
 
 
 def main() -> None:
-    args = sys.argv[1:]
+    try:
+        market, args = pop_market(sys.argv[1:])
+    except MarketError as exc:
+        print(str(exc), file=sys.stderr)
+        sys.exit(2)
     as_json = "--json" in args
     args = [item for item in args if item != "--json"]
     cover = _flag(args, "--cover")
     if cover is None:
         cover = _flag(args, "--thumb")
     if "--title" in args:
-        rows = [check(args[args.index("--title") + 1], cover)]
+        rows = [check(args[args.index("--title") + 1], cover, market)]
     elif args and os.path.exists(args[0]) and not args[0].startswith("--"):
         with open(args[0], encoding="utf-8") as fh:
-            rows = [check(line, cover) for line in fh.read().splitlines() if line.strip()]
+            rows = [check(line, cover, market) for line in fh.read().splitlines() if line.strip()]
     else:
         print(__doc__)
         sys.exit(1)

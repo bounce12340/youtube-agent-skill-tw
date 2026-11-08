@@ -29,6 +29,12 @@ import re
 import statistics
 import sys
 
+_LIB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "_lib")
+if _LIB not in sys.path:
+    sys.path.insert(0, _LIB)
+
+from markets import MarketError, flag_terms, get_market, pop_market  # noqa: E402
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 HOOKS = os.path.join(HERE, "..", "yt-script", "hooks.json")
 with open(HOOKS, encoding="utf-8") as _fh:
@@ -47,7 +53,7 @@ def classify(title: str) -> str:
     return best["name"] if best else UNCLASSIFIED
 
 
-def rank(rows: list[dict], minimum: float = 1.5) -> dict:
+def rank(rows: list[dict], minimum: float = 1.5, market: str = "tw") -> dict:
     grouped: dict[str, list[dict]] = {}
     for row in rows:
         grouped.setdefault(str(row.get("channel") or "未命名"), []).append(row)
@@ -77,6 +83,8 @@ def rank(rows: list[dict], minimum: float = 1.5) -> dict:
     counts: dict[str, int] = {}
     for row in kept:
         counts[row["formula"]] = counts.get(row["formula"], 0) + 1
+    profile = get_market(market)
+    titles = "\n".join(str(row.get("title") or "") for row in rows)
     return {
         "videos": len(rows),
         "channels": len(grouped),
@@ -84,11 +92,18 @@ def rank(rows: list[dict], minimum: float = 1.5) -> dict:
         "outliers": kept,
         "skipped_thin_channels": thin,
         "formula_counts": counts,
+        "market": profile["id"],
+        "locale": profile["locale"],
+        "term_flags": flag_terms(titles, profile["id"]),
     }
 
 
 def main() -> None:
-    args = sys.argv[1:]
+    try:
+        market, args = pop_market(sys.argv[1:])
+    except MarketError as exc:
+        print(str(exc), file=sys.stderr)
+        sys.exit(2)
     as_json = "--json" in args
     args = [item for item in args if item != "--json"]
     minimum = float(args[args.index("--min") + 1]) if "--min" in args else 1.5
@@ -100,7 +115,7 @@ def main() -> None:
         rows = json.load(fh)
     if isinstance(rows, dict):
         rows = rows.get("videos", [])
-    report = rank(rows, minimum)
+    report = rank(rows, minimum, market)
     if as_json:
         print(json.dumps(report, ensure_ascii=False, indent=1))
         return

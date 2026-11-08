@@ -1,0 +1,42 @@
+{
+  "id": "mo",
+  "locale": "zh-MO",
+  "name": "澳門",
+  "script": "hant",
+  "default": false,
+  "colloquial": ["點解", "而家", "係咪", "咗", "嘅", "喺", "噉", "冇", "呢邊", "喂呀"],
+  "script_note": "預設繁體，並另收一份粵語口語詞，可刪。這份詞表獨立於香港，不是香港設定的別名。",
+  "official_language_note": "澳門基本法第九條：行政、立法、司法機關除使用中文外，還可使用葡文，葡文也是正式語文。這只說明官方語文，不是社群媒體統計。",
+  "official_language_source": "https://www.al.gov.mo/zh-hant/basic-law.html",
+  "quotes": {
+    "primary": "corner",
+    "examples": ["「」", "『』"],
+    "companion": "ascii",
+    "note": "中文句子的可編輯預設是角引號。葡文配套若要寫，沿用半形引號。基本法把葡文列為正式語文，沒有規定貼文必須雙語。"
+  },
+  "layout": {
+    "desktop_width": 56,
+    "mobile_width": 28,
+    "cover_width": 16,
+    "youtube_title_chars": 100,
+    "note": "寬度是可編輯預設，不是平台公布的截斷位置。數字和香港不同，只是為了讓兩份檔可以各自改，不是測量結果。"
+  },
+  "platforms": [
+    {"id": "youtube", "label": "YouTube"},
+    {"id": "facebook", "label": "Facebook"},
+    {"id": "instagram", "label": "Instagram"},
+    {"id": "threads", "label": "Threads"}
+  ],
+  "platform_note": "這份順序是可編輯預設，而且和香港那份不是同一份檔。它不是澳門的使用率。",
+  "companion_language": "pt",
+  "fillers": ["即係", "咁", "噉", "喂呀", "呢邊", "咩", "囉", "喎", "呀", "係咪", "嗯", "啊", "um", "uh", "okay", "ok"],
+  "hook_fillers": ["大家好", "即係", "噉", "喂呀"],
+  "vague": ["必看", "超正", "好正", "乾貨", "必追", "分享一下", "正到爆", "yyds"],
+  "front_bad": ["大家好", "哈囉", "在開始之前", "各位朋友"],
+  "suffix_particles": [],
+  "example_hook": "點解去到第三秒就走咗？",
+  "example_title": "30 秒講完澳門通",
+  "example_cover": "別自介",
+  "code_switch": null,
+  "rules_note": "沒有合規或法律保證。發布前請自己查看該平台目前的規則。"
+}

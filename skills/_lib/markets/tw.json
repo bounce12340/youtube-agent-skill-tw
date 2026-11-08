@@ -1,0 +1,54 @@
+{
+  "id": "tw",
+  "locale": "zh-TW",
+  "name": "台灣",
+  "script": "hant",
+  "default": true,
+  "colloquial": [],
+  "script_note": "預設繁體。這是這份設定的起點，不是對其他市場的排名。",
+  "official_language_note": "語言標籤用 zh-TW。這份設定沒有把官方語文寫成平台成效。",
+  "quotes": {
+    "primary": "corner",
+    "examples": ["「」", "『』"],
+    "companion": null,
+    "note": "可編輯預設用角引號。半形引號若出現在英文句子裡，不另外標成錯誤。"
+  },
+  "layout": {
+    "desktop_width": 60,
+    "mobile_width": 32,
+    "cover_width": 16,
+    "youtube_title_chars": 100,
+    "note": "寬度是可編輯預設，不是平台公布的截斷位置，也不代表讀者比較快或比較慢。100 字元只套用在 YouTube 標題。"
+  },
+  "platforms": [
+    {"id": "youtube_shorts", "label": "YouTube Shorts"},
+    {"id": "instagram_reels", "label": "Instagram Reels"},
+    {"id": "tiktok", "label": "TikTok"},
+    {"id": "threads", "label": "Threads"}
+  ],
+  "platform_note": "這份順序是可編輯預設，方便技能先提到哪些出口。它不是使用率，也不是效果判斷。",
+  "companion_language": null,
+  "fillers": [
+    "let me see", "you know", "i mean", "hold on", "basically", "actually", "anyway",
+    "然後呢", "基本上", "你知道", "我是說", "等一下", "我想想", "怎麼說", "就是說",
+    "okay", "yeah", "right", "like", "hmm", "對啊", "對呀", "對哦", "好的", "好喔",
+    "其實", "反正", "那個", "就是", "然後", "歡迎收看", "大家好",
+    "um", "uh", "er", "ah", "so", "ok",
+    "嗯", "啊", "呃", "額", "喔", "哦", "哎", "欸", "蛤", "哈", "嘿", "啦", "嘛", "吧", "呢", "對", "好"
+  ],
+  "hook_fillers": ["歡迎收看", "大家好", "基本上", "其實", "那個", "就是", "然後", "各位", "哈囉", "今天"],
+  "vague": [
+    "改變遊戲", "不看後悔", "建議收藏", "真的假的", "重點來了", "懂的都懂", "直接封神",
+    "分享一下", "絕絕子", "閉眼入", "天花板", "有夠狂", "超猛", "超扯", "超強", "炸裂",
+    "爆紅", "神作", "必看", "必收", "必追", "絕了", "很重要", "乾貨", "無腦", "厲害",
+    "好棒", "太強", "無敵", "頂級", "終極", "秘密", "史詩", "完美", "驚艷", "震撼",
+    "碼起來", "先馬", "封神", "最好", "yyds"
+  ],
+  "front_bad": ["今天我們", "大家好", "哈囉大家", "在開始之前", "分享一下", "這支影片想", "hey guys", "welcome back"],
+  "suffix_particles": [],
+  "example_hook": "為什麼你會在第三秒滑走？",
+  "example_title": "30 秒講完字幕",
+  "example_cover": "別自介",
+  "code_switch": null,
+  "rules_note": "沒有合規或法律保證。發布前請自己查看該平台目前的規則。"
+}

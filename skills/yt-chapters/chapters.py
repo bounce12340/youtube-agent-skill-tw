@@ -26,6 +26,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "_lib"))
 
 from deadair import load  # noqa: E402
+from markets import MarketError, flag_terms, get_market, pop_market  # noqa: E402
 from zhtext import content_grams, cjk_chars, display_width, truncate_display  # noqa: E402
 
 MIN_SECONDS = 10.0
@@ -58,15 +59,22 @@ def draft_title(text: str) -> str:
     return "未命名"
 
 
-def build_chapters(cues: list[tuple[float, float, str]], target: int = 7) -> dict:
+def build_chapters(cues: list[tuple[float, float, str]], target: int = 7, market: str = "tw") -> dict:
+    profile = get_market(market)
+    meta = {
+        "market": profile["id"],
+        "locale": profile["locale"],
+        "term_flags": flag_terms("\n".join(cue[2] for cue in cues), profile["id"]),
+    }
     if len(cues) < 6:
-        return {"valid": False, "reason": "字幕少於 6 格，不夠分段", "chapters": []}
+        return {"valid": False, "reason": "字幕少於 6 格，不夠分段", "chapters": [], **meta}
     duration = cues[-1][1]
     if duration < MIN_SECONDS * 3:
         return {
             "valid": False,
             "reason": "總長不到 30 秒。章節是長片用的，3 分鐘內的短影音可以略過",
             "chapters": [],
+            **meta,
         }
     candidates = []
     for index in range(1, len(cues)):
@@ -100,11 +108,15 @@ def build_chapters(cues: list[tuple[float, float, str]], target: int = 7) -> dic
         and all(item["seconds"] >= MIN_SECONDS for item in chapters)
     )
     reason = "" if valid else "不合 YouTube 規則：要有 3 條以上、第一條 0:00、每條至少 10 秒"
-    return {"valid": valid, "reason": reason, "chapters": chapters}
+    return {"valid": valid, "reason": reason, "chapters": chapters, **meta}
 
 
 def main() -> None:
-    args = sys.argv[1:]
+    try:
+        market, args = pop_market(sys.argv[1:])
+    except MarketError as exc:
+        print(str(exc), file=sys.stderr)
+        sys.exit(2)
     as_json = "--json" in args
     args = [item for item in args if item != "--json"]
     target = int(args[args.index("--target") + 1]) if "--target" in args else 7
@@ -116,7 +128,7 @@ def main() -> None:
     if len(cues) < 6:
         print("字幕少於 6 格，不夠分段")
         sys.exit(1)
-    report = build_chapters(cues, target)
+    report = build_chapters(cues, target, market)
     if as_json:
         print(json.dumps(report, ensure_ascii=False, indent=1))
         return

@@ -311,12 +311,29 @@ def normalize_spaces(text: str) -> str:
     return re.sub(r" +", " ", "".join(out)).strip()
 
 
-def is_filler_line(line: str) -> bool:
+def split_suffix_particles(text: str, suffixes: tuple[str, ...] = ()) -> str:
+    """把黏在英文後面的語氣詞分開，例如 okaylah。只在呼叫端傳入詞表時使用。"""
+    if not suffixes:
+        return text
+    ordered = sorted(suffixes, key=len, reverse=True)
+    pattern = re.compile(
+        r"([A-Za-z]+)(" + "|".join(re.escape(item) for item in ordered) + r")(?![A-Za-z])",
+        re.IGNORECASE,
+    )
+    return pattern.sub(r"\1 \2", text)
+
+
+def is_filler_line(
+    line: str,
+    phrases: tuple[str, ...] | None = None,
+    suffixes: tuple[str, ...] = (),
+) -> bool:
     """整行只剩口頭禪才回傳 True。句子裡夾一個「就是」不算。"""
-    s = normalize_spaces(line)
+    s = normalize_spaces(split_suffix_particles(line, suffixes)).lower()
     if not s:
         return False
-    phrases = sorted(FILLER_PHRASES, key=len, reverse=True)
+    chosen = FILLER_PHRASES if phrases is None else phrases
+    phrases = sorted(chosen, key=len, reverse=True)
     i = 0
     n = len(s)
     found = False
@@ -346,12 +363,16 @@ def content_lines(text: str) -> list[str]:
     return lines or ([text.strip()] if text.strip() else [])
 
 
-def is_filler_cue(text: str) -> bool:
+def is_filler_cue(
+    text: str,
+    phrases: tuple[str, ...] | None = None,
+    suffixes: tuple[str, ...] = (),
+) -> bool:
     """雙語字幕：每一行都是口頭禪才整格刪。一行有內容就保留。"""
     lines = content_lines(text)
     if not lines:
         return False
-    return all(is_filler_line(ln) for ln in lines)
+    return all(is_filler_line(ln, phrases, suffixes) for ln in lines)
 
 
 def script_mix(text: str) -> str:
@@ -366,8 +387,12 @@ def script_mix(text: str) -> str:
     return "other"
 
 
-def opening_key(line: str) -> tuple | None:
-    if is_filler_line(line):
+def opening_key(
+    line: str,
+    phrases: tuple[str, ...] | None = None,
+    suffixes: tuple[str, ...] = (),
+) -> tuple | None:
+    if is_filler_line(line, phrases, suffixes):
         return None
     cjk = cjk_chars(line)
     if len(cjk) >= 4:
@@ -378,10 +403,14 @@ def opening_key(line: str) -> tuple | None:
     return None
 
 
-def opening_keys(text: str) -> set[tuple]:
+def opening_keys(
+    text: str,
+    phrases: tuple[str, ...] | None = None,
+    suffixes: tuple[str, ...] = (),
+) -> set[tuple]:
     keys = set()
     for line in content_lines(text):
-        key = opening_key(line)
+        key = opening_key(line, phrases, suffixes)
         if key:
             keys.add(key)
     return keys
@@ -415,13 +444,15 @@ def find_en_phrases(text: str, phrases: tuple[str, ...]) -> list[str]:
     return found
 
 
-def vague_hits(text: str) -> list[str]:
-    return find_zh_phrases(text, VAGUE_ZH) + find_en_phrases(text, VAGUE_EN)
+def vague_hits(text: str, vague_zh: tuple[str, ...] | None = None) -> list[str]:
+    chosen = VAGUE_ZH if vague_zh is None else vague_zh
+    return find_zh_phrases(text, chosen) + find_en_phrases(text, VAGUE_EN)
 
 
-def filler_hits(text: str) -> list[str]:
-    zh = tuple(phrase for phrase in HOOK_FILLERS if not phrase.isascii())
-    en = tuple(phrase for phrase in HOOK_FILLERS if phrase.isascii())
+def filler_hits(text: str, phrases: tuple[str, ...] | None = None) -> list[str]:
+    chosen = HOOK_FILLERS if phrases is None else phrases
+    zh = tuple(phrase for phrase in chosen if not phrase.isascii())
+    en = tuple(phrase for phrase in chosen if phrase.isascii())
     return find_zh_phrases(text, zh) + find_en_phrases(text, en)
 
 

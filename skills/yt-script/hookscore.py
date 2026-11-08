@@ -30,6 +30,7 @@ _LIB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "_lib")
 if _LIB not in sys.path:
     sys.path.insert(0, _LIB)
 
+from markets import MarketError, flag_terms, get_market, pop_market  # noqa: E402
 from zhtext import (  # noqa: E402
     ADDRESS,
     CLOSED_EN,
@@ -70,10 +71,10 @@ LABEL = {
 }
 
 
-def specificity(text: str) -> int:
+def specificity(text: str, vague_zh: tuple[str, ...] | None = None, hook_phrases: tuple[str, ...] | None = None) -> int:
     figures = len(figure_spans(text))
-    vague = len(vague_hits(text))
-    filler = len(filler_hits(text))
+    vague = len(vague_hits(text) if vague_zh is None else vague_hits(text, vague_zh))
+    filler = len(filler_hits(text) if hook_phrases is None else filler_hits(text, hook_phrases))
     score = 34 + figures * 22 - vague * 16 - filler * 5
     named = sum(1 for word in text.split()[1:] if word[:1].isupper() and word[1:2].islower())
     score += min(18, 6 * named)
@@ -145,8 +146,21 @@ def band(verdict: int) -> str:
 BAND_ZH = {"STRONG": "強", "WORKABLE": "可用", "WEAK": "弱"}
 
 
-def score(text: str) -> dict:
-    parts = {name: fn(text) for name, fn in PROPS}
+def score(text: str, market: str = "tw") -> dict:
+    profile = get_market(market)
+    if profile["id"] == "tw":
+        parts = {name: fn(text) for name, fn in PROPS}
+    else:
+        parts = {}
+        for name, fn in PROPS:
+            if name == "SPECIFICITY":
+                parts[name] = specificity(
+                    text,
+                    vague_zh=tuple(profile["vague"]),
+                    hook_phrases=tuple(profile["hook_fillers"]),
+                )
+            else:
+                parts[name] = fn(text)
     values = list(parts.values())
     if not text.strip() or not values:
         verdict = 0
@@ -163,6 +177,9 @@ def score(text: str) -> dict:
         "matched": hits,
         "weakest": weakest,
         "spoken_seconds": round(spoken_seconds(text), 2),
+        "market": profile["id"],
+        "locale": profile["locale"],
+        "term_flags": flag_terms(text, profile["id"]),
     }
 
 
@@ -183,7 +200,11 @@ def report(row: dict) -> None:
 
 
 def main() -> None:
-    args = sys.argv[1:]
+    try:
+        market, args = pop_market(sys.argv[1:])
+    except MarketError as exc:
+        print(str(exc), file=sys.stderr)
+        sys.exit(2)
     as_json = "--json" in args
     args = [item for item in args if item != "--json"]
     if "--hook" in args:
@@ -194,7 +215,7 @@ def main() -> None:
     else:
         print(__doc__)
         sys.exit(1)
-    rows = [score(line) for line in lines]
+    rows = [score(line, market) for line in lines]
     rows.sort(key=lambda row: -row["verdict"])
     if as_json:
         public = []

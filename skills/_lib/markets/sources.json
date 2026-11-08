@@ -1,0 +1,47 @@
+{
+  "note": "下面的連結只支持文件裡的語文或產品事實。平台順序不是這些連結的結論，也不是使用率。",
+  "items": [
+    {
+      "id": "iana",
+      "title": "IANA Language Subtag Registry",
+      "url": "https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry",
+      "supports": "zh-TW、zh-HK、zh-MO、zh-SG、zh-CN 是 BCP 47 語言標籤。"
+    },
+    {
+      "id": "hk-basic-law-9",
+      "title": "香港特別行政區基本法第一章第九條",
+      "url": "https://www.basiclaw.gov.hk/tc/basiclaw/chapter1.html",
+      "supports": "行政、立法、司法機關除使用中文外，還可使用英文，英文也是正式語文。"
+    },
+    {
+      "id": "mo-basic-law-9",
+      "title": "澳門特別行政區基本法第九條",
+      "url": "https://www.al.gov.mo/zh-hant/basic-law.html",
+      "supports": "行政、立法、司法機關除使用中文外，還可使用葡文，葡文也是正式語文。"
+    },
+    {
+      "id": "mo-basic-law-gazette",
+      "title": "澳門特別行政區公報所載基本法",
+      "url": "https://bo.dsaj.gov.mo/bo/i/1999/leibasicacn/",
+      "supports": "同一條第九條的公報文本。"
+    },
+    {
+      "id": "sg-constitution-153a",
+      "title": "Constitution of the Republic of Singapore, Article 153A",
+      "url": "https://sso.agc.gov.sg/Act/CONS1963?ProvIds=pr153A-",
+      "supports": "馬來語、華語、淡米爾語和英語是四種官方語言。Singlish 不在該條。"
+    },
+    {
+      "id": "cn-language-law-2001",
+      "title": "中華人民共和國國家通用語言文字法（2001 年國務院公報文本）",
+      "url": "https://www.gov.cn/gongbao/content/2001/content_61066.htm",
+      "supports": "該公布文本第二條寫明國家通用語言文字是普通話和規範漢字。這不是平台成效說明，也不是這份技能包的合規結論。後來若有修正，以最新公布文本為準。"
+    },
+    {
+      "id": "youtube-title-length",
+      "title": "YouTube Help: Edit video settings",
+      "url": "https://support.google.com/youtube/answer/57404",
+      "supports": "YouTube 標題上限是 100 個字元。這個數字只在文字要放上 YouTube 時使用。"
+    }
+  ]
+}

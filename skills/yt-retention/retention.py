@@ -25,8 +25,12 @@ import os
 import sys
 
 _EDIT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "yt-edit")
-if _EDIT not in sys.path:
-    sys.path.insert(0, _EDIT)
+_LIB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "_lib")
+for _path in (_LIB, _EDIT):
+    if _path not in sys.path:
+        sys.path.insert(0, _path)
+
+from markets import MarketError, flag_terms, get_market, pop_market  # noqa: E402
 
 
 def load_csv(path: str) -> tuple[list[tuple[float, float]], str | None]:
@@ -85,6 +89,7 @@ def analyze(
     axis: str | None = None,
     axis_hint: str | None = None,
     cues: list[tuple[float, float, str]] | None = None,
+    market: str = "tw",
 ) -> dict:
     if len(rows) < 8:
         raise ValueError("至少需要 8 個資料點")
@@ -170,6 +175,12 @@ def analyze(
         "cliffs": cliffs,
         "slide_per_unit": round(slide, 3),
         "said": said,
+        "market": get_market(market)["id"],
+        "locale": get_market(market)["locale"],
+        "term_flags": flag_terms(
+            "\n".join(cue[2] for cue in cues) if cues else "",
+            get_market(market)["id"],
+        ),
     }
 
 
@@ -180,7 +191,11 @@ def _flag(args: list[str], name: str) -> str | None:
 
 
 def main() -> None:
-    args = sys.argv[1:]
+    try:
+        market, args = pop_market(sys.argv[1:])
+    except MarketError as exc:
+        print(str(exc), file=sys.stderr)
+        sys.exit(2)
     as_json = "--json" in args
     args = [item for item in args if item != "--json"]
     duration = float(_flag(args, "--duration")) if _flag(args, "--duration") else None
@@ -204,7 +219,7 @@ def main() -> None:
         from deadair import load as load_cues
         cues = load_cues(transcript)
     try:
-        report = analyze(rows, duration, hook_seconds, axis, hint, cues)
+        report = analyze(rows, duration, hook_seconds, axis, hint, cues, market)
     except ValueError as exc:
         print(str(exc))
         sys.exit(1)

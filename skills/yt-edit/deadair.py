@@ -30,6 +30,7 @@ _LIB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "_lib")
 if _LIB not in sys.path:
     sys.path.insert(0, _LIB)
 
+from markets import MarketError, flag_terms, get_market, pop_market  # noqa: E402
 from zhtext import clean_caption, is_filler_cue, opening_keys, script_mix  # noqa: E402
 
 
@@ -92,10 +93,15 @@ def load(path: str) -> list[tuple[float, float, str]]:
     return [(start, end, "\n".join(lines)) for start, end, lines in cues if lines]
 
 
-def build_cuts(cues: list[tuple[float, float, str]], floor: float) -> list[dict]:
+def build_cuts(
+    cues: list[tuple[float, float, str]],
+    floor: float,
+    phrases: tuple[str, ...] | None = None,
+    suffixes: tuple[str, ...] = (),
+) -> list[dict]:
     cuts = []
     for index, (start, end, text) in enumerate(cues):
-        if is_filler_cue(text):
+        if is_filler_cue(text, phrases, suffixes):
             cuts.append({
                 "kind": "FILLER",
                 "start": round(start, 3),
@@ -114,13 +120,15 @@ def build_cuts(cues: list[tuple[float, float, str]], floor: float) -> list[dict]
                     "why": f"{gap:.2f} 秒空檔",
                     "mix": "gap",
                 })
-        if text.strip() and not is_filler_cue(text):
+        if text.strip() and not is_filler_cue(text, phrases, suffixes):
             previous = index - 1
-            while previous >= 0 and (is_filler_cue(cues[previous][2]) or not cues[previous][2].strip()):
+            while previous >= 0 and (
+                is_filler_cue(cues[previous][2], phrases, suffixes) or not cues[previous][2].strip()
+            ):
                 previous -= 1
             if previous >= 0:
-                now_keys = opening_keys(text)
-                old_keys = opening_keys(cues[previous][2])
+                now_keys = opening_keys(text, phrases, suffixes)
+                old_keys = opening_keys(cues[previous][2], phrases, suffixes)
                 shared = now_keys & old_keys
                 if shared:
                     shown = next(iter(shared))[1]
@@ -136,13 +144,17 @@ def build_cuts(cues: list[tuple[float, float, str]], floor: float) -> list[dict]
     return [cut for cut in cuts if cut["end"] > cut["start"]]
 
 
-def analyze(path: str, floor: float = 0.45) -> dict:
+def analyze(path: str, floor: float = 0.45, market: str = "tw") -> dict:
+    profile = get_market(market)
+    phrases = None if profile["id"] == "tw" else tuple(profile["fillers"])
+    suffixes = tuple(profile.get("suffix_particles") or ())
     cues = load(path)
     if not cues:
         raise ValueError("沒有讀到字幕。需要 srt、vtt 或 Whisper segments JSON。")
     duration = cues[-1][1]
-    cuts = build_cuts(cues, floor)
+    cuts = build_cuts(cues, floor, phrases, suffixes)
     removed = sum(cut["end"] - cut["start"] for cut in cuts)
+    spoken = "\n".join(text for _start, _end, text in cues)
     return {
         "source": os.path.basename(path),
         "duration": round(duration, 3),
@@ -151,11 +163,18 @@ def analyze(path: str, floor: float = 0.45) -> dict:
         "cuts": cuts,
         "removed": round(removed, 3),
         "out": round(duration - removed, 3),
+        "market": profile["id"],
+        "locale": profile["locale"],
+        "term_flags": flag_terms(spoken, profile["id"]),
     }
 
 
 def main() -> None:
-    args = sys.argv[1:]
+    try:
+        market, args = pop_market(sys.argv[1:])
+    except MarketError as exc:
+        print(str(exc), file=sys.stderr)
+        sys.exit(2)
     as_json = "--json" in args
     args = [item for item in args if item != "--json"]
     floor = float(args[args.index("--floor") + 1]) if "--floor" in args else 0.45
@@ -164,7 +183,7 @@ def main() -> None:
         print(__doc__)
         sys.exit(1)
     try:
-        report = analyze(files[0], floor)
+        report = analyze(files[0], floor, market)
     except (ValueError, KeyError, json.JSONDecodeError) as exc:
         print(str(exc))
         sys.exit(1)
