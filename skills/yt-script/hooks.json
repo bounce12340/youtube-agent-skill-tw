@@ -1,0 +1,211 @@
+{
+  "version": "1.0-zh-TW",
+  "adapted_from": {
+    "project": "youtube-agent-skill",
+    "author": "Jake Schincariol",
+    "url": "https://github.com/Jakeschincariol/youtube-agent-skill",
+    "commit": "a2feb2104981a375ffd4f87ee04f4f5344ac43c6",
+    "license": "MIT",
+    "note": "公式骨架沿用上游 21 種，例句、失敗條件與比對式改寫為台灣繁中短影音。這不是官方檔。"
+  },
+  "locale": "zh-TW",
+  "note": "21 種開頭公式，對象是 3 分鐘內的 Shorts、Reels、TikTok。第一句要在 1 到 3 秒內講完，並做三件事：對上標題承諾、留下還沒合上的問題、讓人相信後面真的有東西。只做第三件的是摘要，觀眾會滑走。公式判斷的是字面上的形狀，不是這支片為什麼有觀看。",
+  "rules": [
+    "第一句就對上標題。標題說完播、開頭卻在自介，人會在第一秒走。",
+    "只留一個承諾。兩個承諾等於沒有。",
+    "具體勝過形容。講「97% 在第 30 支停更」，不要講「超猛成長」。",
+    "若承諾要秀出畫面，20 秒內就要出現。短影音更短，盡量在第一個鏡頭。",
+    "不要用自我介紹開場。訂閱和追蹤還沒有被賺到。"
+  ],
+  "hooks": [
+    {
+      "id": "the-statistic",
+      "name": "統計數字",
+      "name_en": "The Statistic",
+      "shape": "先講一個觀眾不知道的數字，接著講後果。",
+      "example": "97% 的人在第 30 支片就停更，剩下的人做法不一樣。",
+      "fails_when": "數字含糊或無法核對就失效。說得出來源再講。",
+      "match": ["\\d+\\s?[%％]", "百分之\\s?\\d+", "\\d+\\s?個人有\\s?\\d+"]
+    },
+    {
+      "id": "someone-elses-result",
+      "name": "別人的成果",
+      "name_en": "Someone Else's Result",
+      "shape": "點出某個帳號的結果，再講做法。",
+      "example": "這個帳號七個月從 400 人長到 2 萬，我把格式記下來了。",
+      "fails_when": "不要編造數字。說不出是哪個帳號，就換一種公式。",
+      "match": ["這個帳號", "從[^。]{0,16}長到", "went from", "this channel"]
+    },
+    {
+      "id": "the-mistake",
+      "name": "你正在犯的錯",
+      "name_en": "The Mistake",
+      "shape": "點名觀眾此刻很可能正在做的錯。",
+      "example": "你現在還在前三秒自介，後面再好看也留不住。",
+      "fails_when": "這個錯要很常見，而且觀眾一秒就能對照自己。",
+      "match": ["你現在還在", "前三秒自介", "you're still", "the mistake"]
+    },
+    {
+      "id": "contrarian-flip",
+      "name": "反常識",
+      "name_en": "Contrarian Flip",
+      "shape": "先講大家都這樣說，再拒絕它。",
+      "example": "大家都說要日更。我改成一週一支。",
+      "fails_when": "後面 15 秒內要有能核對的做法，不然只是為反而反。",
+      "match": ["大家都說", "大家都覺得", "everyone says", "is wrong"]
+    },
+    {
+      "id": "the-reveal",
+      "name": "直接亮出來",
+      "name_en": "The Reveal",
+      "shape": "承諾一個具體的東西會出現，然後真的秀出來。",
+      "example": "我現在就把那一行字幕秀在畫面上。",
+      "fails_when": "必須真的秀。短影音拖到後半才亮，開頭已經空了。",
+      "match": ["秀在畫面上", "我現在就把", "on screen", "i'm going to show"]
+    },
+    {
+      "id": "the-superlative",
+      "name": "最字級",
+      "name_en": "The Superlative",
+      "shape": "某一類裡最快、唯一或最省事的做法。",
+      "example": "這是把長片切成短影音最快的做法。",
+      "fails_when": "最字很便宜。要講它贏過什麼。",
+      "match": ["最快的做法", "最簡單的做法", "唯一的做法", "the fastest", "the only"]
+    },
+    {
+      "id": "the-clock",
+      "name": "時間盒",
+      "name_en": "The Clock",
+      "shape": "把收穫框在一段時間裡。",
+      "example": "接下來 90 秒，你會拿到封面那一行字。",
+      "fails_when": "時間要真的做得到。超時之後，下一支的開頭就沒人信。",
+      "match": ["接下來\\s?\\d+\\s?秒", "\\d+\\s?秒內", "in the next", "by the end of this video"]
+    },
+    {
+      "id": "i-tried-it",
+      "name": "我試過了",
+      "name_en": "I Tried It",
+      "shape": "第一人稱實驗，並講出你付了什麼。",
+      "example": "我連續 30 天只發短影音，長片先暫停。",
+      "fails_when": "要有真實成本，時間、金錢或風險，不然沒有利害。",
+      "match": ["我連續\\s?\\d+\\s?天", "我試了\\s?\\d+", "i tried", "for \\d+ days"]
+    },
+    {
+      "id": "the-question",
+      "name": "觀眾的問題",
+      "name_en": "The Question",
+      "shape": "問觀眾本來就會打進搜尋框的那一句。",
+      "example": "為什麼完播會停在第三秒？",
+      "fails_when": "必須是觀眾的問題，不是你自己的。從留言裡拿。",
+      "match": ["^[ \t]*為什麼", "^[ \t]*為何", "^[ \t]*怎麼", "^[ \t]*(why|how|what)\\b"]
+    },
+    {
+      "id": "the-before-after",
+      "name": "前後對照",
+      "name_en": "Before and After",
+      "shape": "兩個狀態，中間一次改動。",
+      "example": "以前的封面是這樣，現在改成這樣。",
+      "fails_when": "要有畫面。只有口播、沒有前後畫面時不要用。",
+      "match": ["以前的[^。]{0,12}現在", "之前是[^。]{0,12}現在是", "this was", "used to"]
+    },
+    {
+      "id": "the-teardown",
+      "name": "拆解",
+      "name_en": "The Teardown",
+      "shape": "把一批真實的片子公開拆開。",
+      "example": "我把這個月觀看最高的九支短影音拆開來看。",
+      "fails_when": "要講你拿了什麼、有幾支。只拆一支是軼事。",
+      "match": ["拆開來看", "拆解", "teardown", "i pulled"]
+    },
+    {
+      "id": "the-stack",
+      "name": "兩個工具疊一起",
+      "name_en": "The Stack",
+      "shape": "兩個叫得出名字的工具，疊出一個結果。",
+      "example": "字幕檔配上試算表，就能標出離開的秒數。",
+      "fails_when": "兩個都要叫得出名字，而且結果真的需要兩個一起。",
+      "match": ["配上", "加上[^。]{0,8}就能", "plus", "together"]
+    },
+    {
+      "id": "the-warning",
+      "name": "先別做",
+      "name_en": "The Warning",
+      "shape": "觀眾正要付出的一個成本。",
+      "example": "先別上傳，把開頭三秒檢查完。",
+      "fails_when": "成本很小就是在嚇人家。留給真的會出事的情況。",
+      "match": ["先別上傳", "先不要發", "別再", "do not", "don't upload"]
+    },
+    {
+      "id": "the-list",
+      "name": "清單",
+      "name_en": "The List",
+      "shape": "有數字的一組東西，數字在第一句。",
+      "example": "七件重拍前我會先改的事。",
+      "fails_when": "數字要準，每一項種類要不同。",
+      "match": ["^[零一二三四五六七八九十兩\\d]+件", "^[零一二三四五六七八九十兩\\d]+個", "^\\d+ things", "here are \\d+"]
+    },
+    {
+      "id": "the-receipt",
+      "name": "先給證據",
+      "name_en": "The Receipt",
+      "shape": "先把證據放上畫面，再解釋。",
+      "example": "這是後台的停留畫面，這一支占了四成觀看。",
+      "fails_when": "要有真的畫面。只用嘴描述不算證據。",
+      "match": ["這是後台", "這張截圖", "占了[^。]{0,8}觀看", "screenshot", "this is the"]
+    },
+    {
+      "id": "the-insider",
+      "name": "內部才知道",
+      "name_en": "The Insider",
+      "shape": "系統裡面才看得到的資訊。",
+      "example": "後台有一份幾乎沒人開的停留報告。",
+      "fails_when": "不要宣稱你沒有的內部身分。",
+      "match": ["幾乎沒人開", "很少人會去看", "almost nobody", "buried"]
+    },
+    {
+      "id": "the-impossible",
+      "name": "聽起來不可能",
+      "name_en": "The Impossible Claim",
+      "shape": "講一句聽起來不像真的，然後開始證明。",
+      "example": "不用開剪輯軟體，也能排好一週的短影音。",
+      "fails_when": "20 秒內要開始證明，不然就是誇大。",
+      "match": ["不用開", "完全不用", "零剪輯", "without", "\\bzero\\b"]
+    },
+    {
+      "id": "the-comparison",
+      "name": "對打",
+      "name_en": "The Comparison",
+      "shape": "兩個叫得出名字的選項，有一個贏。",
+      "example": "同一支片兩種開頭，一種留住，一種沒有。",
+      "fails_when": "要把輸的那個講出來。沒有輸家就是廣告。",
+      "match": ["兩種開頭", "一種留住", "\\bvs\\.?\\b", "versus"]
+    },
+    {
+      "id": "the-origin",
+      "name": "起點",
+      "name_en": "The Origin",
+      "shape": "一個結果實際上從哪裡開始。",
+      "example": "我每一支短影音都從同一份十二行開頭檔開始。",
+      "fails_when": "一個帳號大致只能用一次。這是在公開你的做法。",
+      "match": ["每一支[^。]{0,16}都從", "全部從同一", "it all starts", "every video"]
+    },
+    {
+      "id": "the-deadline",
+      "name": "截止日期",
+      "name_en": "The Deadline",
+      "shape": "某個做法在一個日期之後會變。",
+      "example": "這個月開始，舊的描述寫法不再夠用。",
+      "fails_when": "只能搭配查得到的日期。這是最快失信的公式。",
+      "match": ["這個月開始", "不再夠用", "下週起", "no longer", "as of"]
+    },
+    {
+      "id": "the-direct-address",
+      "name": "點名觀眾",
+      "name_en": "The Direct Address",
+      "shape": "開頭就點名是哪一種觀眾。",
+      "example": "如果你的追蹤還在一千以下，看這支就好。",
+      "fails_when": "越窄越有用。「如果你也拍片」等於沒有在叫人。",
+      "match": ["^如果你", "^若你", "^if you\\b", "you specifically"]
+    }
+  ]
+}

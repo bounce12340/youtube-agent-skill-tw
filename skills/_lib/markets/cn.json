@@ -1,0 +1,42 @@
+{
+  "id": "cn",
+  "locale": "zh-CN",
+  "name": "中國大陸",
+  "script": "hans",
+  "default": false,
+  "colloquial": [],
+  "script_note": "預設用簡體，用來對齊目前大陸公開文書常見的規範漢字寫法。法律條文說的是普通話和規範漢字，這裡不把它延伸成平台成效。",
+  "official_language_note": "《國家通用語言文字法》2001 年公報文本第二條寫明，國家通用語言文字是普通話和規範漢字。後來若有修正，以最新公布文本為準。這不是合規結論。",
+  "official_language_source": "https://www.gov.cn/gongbao/content/2001/content_61066.htm",
+  "quotes": {
+    "primary": "curly",
+    "examples": ["“”"],
+    "companion": null,
+    "note": "可編輯預設用彎引號。看到「」只會標示，不會改成另一種引號。"
+  },
+  "layout": {
+    "desktop_width": 60,
+    "mobile_width": 32,
+    "cover_width": 12,
+    "youtube_title_chars": 100,
+    "note": "封面寬度 12 是可編輯預設，方便和台灣那份分開改。它不是平台規格，也不是這個市場的封面比較短才有效。"
+  },
+  "platforms": [
+    {"id": "douyin", "label": "抖音"},
+    {"id": "bilibili", "label": "哔哩哔哩"},
+    {"id": "xiaohongshu", "label": "小红书"},
+    {"id": "wechat_channels", "label": "微信视频号"}
+  ],
+  "platform_note": "這份順序是可編輯預設。抖音和 TikTok 是不同產品。清單沒有寫使用率，要加上 YouTube 或其他平台就自行補。",
+  "companion_language": null,
+  "fillers": ["那个", "就是", "然后", "然后呢", "嗯", "啊", "呃", "额", "其实", "基本上", "对", "好", "怎么说", "你知道", "um", "uh", "ok"],
+  "hook_fillers": ["那个", "就是", "然后", "其实", "大家好", "今天"],
+  "vague": ["必看", "绝绝子", "绝了", "yyds", "干货", "天花板", "封神", "太强了", "无敌"],
+  "front_bad": ["家人们", "大家好", "哈喽", "开始之前"],
+  "suffix_particles": [],
+  "example_hook": "为什么看到第三秒就划走了？",
+  "example_title": "30 秒讲完字幕",
+  "example_cover": "别自介",
+  "code_switch": null,
+  "rules_note": "沒有合規或法律保證。發布前請自己查看該平台目前的規則。"
+}

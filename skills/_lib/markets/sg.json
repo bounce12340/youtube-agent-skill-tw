@@ -1,0 +1,45 @@
+{
+  "id": "sg",
+  "locale": "zh-SG",
+  "name": "新加坡",
+  "script": "hans",
+  "default": false,
+  "colloquial": [],
+  "script_note": "預設用簡體來檢查字形。這是可編輯預設。新加坡憲法第 153A 條沒有規定社群媒體要用哪一套漢字。",
+  "official_language_note": "憲法第 153A 條列出馬來語、華語、淡米爾語和英語。Singlish 不在該條，也不是這份設定的寫作要求。",
+  "official_language_source": "https://sso.agc.gov.sg/Act/CONS1963?ProvIds=pr153A-",
+  "quotes": {
+    "primary": "ascii",
+    "examples": ["\""],
+    "companion": "ascii",
+    "note": "可編輯預設用半形引號，方便和英文夾在同一行。看到「」或“”只會標示，不會刪掉。"
+  },
+  "layout": {
+    "desktop_width": 64,
+    "mobile_width": 40,
+    "cover_width": 18,
+    "youtube_title_chars": 100,
+    "note": "寬度略寬，是因為這份預設常會夾英文，半形字的顯示寬度是 1。這是可編輯預設，不是平台規格，也不是閱讀速度的結論。"
+  },
+  "platforms": [
+    {"id": "youtube", "label": "YouTube"},
+    {"id": "instagram", "label": "Instagram"},
+    {"id": "tiktok", "label": "TikTok"},
+    {"id": "facebook", "label": "Facebook"}
+  ],
+  "platform_note": "這份順序是可編輯預設，不是新加坡的使用率。",
+  "companion_language": "en",
+  "fillers": ["lah", "lor", "leh", "meh", "hor", "ok", "okay", "ya", "ah", "um", "uh", "like", "那个", "就是", "然后", "嗯", "啊", "呃"],
+  "hook_fillers": ["lah", "lor", "leh", "那个", "就是", "然后", "大家好"],
+  "vague": ["必看", "超强", "干货", "天花板", "yyds", "绝绝子", "绝了"],
+  "front_bad": ["hello everyone", "hey guys", "welcome back", "大家好"],
+  "suffix_particles": ["lah", "lor", "leh", "meh", "hor"],
+  "example_hook": "为什么看到第三秒就走了 leh？",
+  "example_title": "30 秒讲完字幕",
+  "example_cover": "别自介",
+  "code_switch": {
+    "note": "lah、lor、leh、meh、hor 是可選的夾用詞，用來檢查整格是不是只剩語氣詞。沒有說新加坡的創作者都這樣講，也沒有說這樣比較有效。",
+    "particles": ["lah", "lor", "leh", "meh", "hor"]
+  },
+  "rules_note": "沒有合規或法律保證。發布前請自己查看該平台目前的規則。"
+}
