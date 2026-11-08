@@ -8,6 +8,16 @@ The original MIT license and copyright notice are preserved below. They apply
 to the portions derived from that project. Modifications in this adaptation
 are released under the same MIT license.
 
+A second repository, video-production-skills, was inspected at commit
+f80248b5e2e41286a6ad5662601e0aa41e121201
+(https://github.com/Jakeschincariol/video-production-skills).
+That repository has no LICENSE file. GitHub reports no license.
+Its README does not grant reuse. Nothing from it was copied or translated.
+The checkers for storyboards, asset ledgers, caption layout, mix plans,
+transcript-timed cards, and export manifests are original. They are covered
+only by the MIT license below. This notice does not treat that repository
+as MIT, and the youtube-agent-skill MIT grant does not extend to it.
+
 MIT License
 
 Copyright (c) 2026 Jake Schincariol

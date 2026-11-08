@@ -10,7 +10,7 @@ COMMIT = "a2feb2104981a375ffd4f87ee04f4f5344ac43c6"
 PY = sys.executable
 
 SCAN_DIRS = ["skills", "templates", "samples", "tests"]
-SCAN_FILES = ["README.md", "LICENSE", "upstream.json"]
+SCAN_FILES = ["README.md", "LICENSE", "upstream.json", "upstream-video.json"]
 BANNED = ("\u2014", "\u6578\u64da", "\u7b97\u529b", "\u8cfd\u9053", "\u5377")
 PRIVATE = ("Josh", "bounce12340", "/home/", "/Users/", "AKIA", "api_key", "secret_key")
 NETWORK = {"urllib", "urllib.request", "requests", "httpx", "socket", "http.client", "aiohttp"}

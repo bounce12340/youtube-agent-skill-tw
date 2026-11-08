@@ -1,0 +1,25 @@
+{
+ "clips": [
+  {
+   "id": "vo",
+   "role": "voice",
+   "start": 0,
+   "end": 8,
+   "gain_db": -3,
+   "fade_in": 0.05,
+   "fade_out": 0.1,
+   "peak_dbfs": -3
+  },
+  {
+   "id": "bed",
+   "role": "music",
+   "start": 0,
+   "end": 12,
+   "gain_db": -16,
+   "fade_in": 0.4,
+   "fade_out": 1.0,
+   "peak_dbfs": -18,
+   "duck_db": 8
+  }
+ ]
+}

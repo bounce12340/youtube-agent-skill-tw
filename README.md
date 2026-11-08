@@ -76,7 +76,33 @@ python3 skills/yt-package/title.py --market mo --title "30 秒講完澳門通" -
 
 `samples/markets/` 有五個市場的開頭例句，以及香港、澳門、新加坡、中國大陸的口頭禪字幕。`samples/markets/ambiguous.txt` 把「八達通」「軟體」「软件」放在一起，用來確認工具只標示、不改字。
 
-`samples/` 裡有字幕、停留 CSV 和清單可以試。測試：
+## 另寫的製作檢查
+
+這些檢查對照過 [video-production-skills](https://github.com/Jakeschincariol/video-production-skills) 的範圍，釘在 commit [`f80248b5e2e41286a6ad5662601e0aa41e121201`](https://github.com/Jakeschincariol/video-production-skills/commit/f80248b5e2e41286a6ad5662601e0aa41e121201)。該倉庫根目錄沒有 LICENSE，README 沒有授權，GitHub 的 license 欄位是空的。這裡沒有複製、翻譯或改寫它的程式、技能、範例、HTML、素材或藍圖，也不把它當成 MIT。機器可讀的同一份說明在 [`upstream-video.json`](upstream-video.json)。
+
+youtube-agent-skill 的 MIT 與 Jake Schincariol 的著作權聲明維持原樣，只涵蓋那一份上游和這份改編裡沿用的部分。
+
+新工具只讀本機檔，預設不呼叫外部程式。沒有遙測、沒有登入、沒有付費請求、不會發佈。可選的 `--run-ffprobe` 只在你指定時執行，而且不會幫你安裝。`--out` 遇到已有檔案會停，除非加上 `--overwrite`。
+
+| 指令 | 工具 | 做什麼 |
+| --- | --- | --- |
+| `/vp-storyboard` | `board.py` | 分鏡時間有沒有重疊或接不上，畫面字是否超過該市場的可編輯寬度 |
+| `/vp-assets` | `ledger.py` | 素材要有相對路徑、來源和授權標籤。不判斷合法，不上網 |
+| `/vp-captions` | `layout.py` | 字幕行數、顯示寬度、停留是否短於口播粗估。不取代 `deadair.py` |
+| `/vp-mix` | `mixcheck.py` | 混音計畫的淡入淡出、正增益、人聲底下配樂有沒有讓位。不讀音訊 |
+| `/vp-cards` | `cards.py` | 疊字卡是否落在字幕時間裡。不輸出 HTML |
+| `/vp-export` | `exportcheck.py` | 輸出說明的解析度、fps、取樣率、峰值。預設不渲染 |
+
+```bash
+python3 skills/vp-storyboard/board.py samples/vp/storyboard_mo.json --market mo --json
+python3 skills/vp-captions/layout.py samples/vp/captions_hk.srt --market hk --json
+python3 skills/vp-mix/mixcheck.py samples/vp/mix.json --json
+python3 skills/vp-export/exportcheck.py samples/vp/export.json --preset vertical --json
+```
+
+直式 1080x1920 與橫式 1920x1080、配樂讓位 6 dB，都是可改的技術預設，不是市場成效，也不是某個人的製作習慣。
+
+`samples/` 裡有字幕、停留 CSV 和清單可以試。`samples/vp/` 有五個市場的分鏡、字幕和疊字卡。測試：
 
 ```bash
 python3 -m unittest discover -s tests -v
@@ -112,6 +138,8 @@ python3 -m unittest discover -s tests -v
 
 **標籤不是策略。** 搜尋文案只用來消歧義，不用來塞詞。
 
+**製作檢查不量聽感，也不預測觀看。** 分鏡、字幕寬度、混音讓位和輸出規格都是可編輯的技術預設。沒有峰值數字就標「沒量過」，不會把它寫成已通過。素材的授權標籤不是法律結論。
+
 ## 授權
 
-MIT。原著作權聲明保留在 [`LICENSE`](LICENSE)：Copyright (c) 2026 Jake Schincariol。改編部分同樣以 MIT 釋出。使用、修改、散佈時請保留該聲明，並註明這是改編而非官方專案。
+MIT。原著作權聲明保留在 [`LICENSE`](LICENSE)：Copyright (c) 2026 Jake Schincariol。改編部分，以及這份倉庫裡另寫的檢查，同樣以 MIT 釋出。使用、修改、散佈時請保留該聲明，並註明這是改編而非官方專案。video-production-skills 沒有授權，沒有被複製進來，也不在這份 MIT 的範圍裡。

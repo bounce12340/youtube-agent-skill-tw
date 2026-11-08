@@ -1,0 +1,16 @@
+{
+ "assets": [
+  {
+   "id": "cam",
+   "path": "clips/room.mp4",
+   "source": "own recording",
+   "license_label": "own"
+  },
+  {
+   "id": "tone",
+   "path": "audio/room-tone.wav",
+   "source": "own recording",
+   "license_label": "own"
+  }
+ ]
+}

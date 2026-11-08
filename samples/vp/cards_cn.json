@@ -1,0 +1,12 @@
+{
+ "duration": 4,
+ "cards": [
+  {
+   "id": "card",
+   "start": 0.5,
+   "end": 3.0,
+   "text": "别自介",
+   "anchor": "bottom"
+  }
+ ]
+}
