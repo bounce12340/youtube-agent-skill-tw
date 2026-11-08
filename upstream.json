@@ -1,0 +1,10 @@
+{
+  "name": "youtube-agent-skill",
+  "author": "Jake Schincariol",
+  "url": "https://github.com/Jakeschincariol/youtube-agent-skill",
+  "commit": "a2feb2104981a375ffd4f87ee04f4f5344ac43c6",
+  "license": "MIT",
+  "adaptation": true,
+  "official": false,
+  "note": "本倉庫是台灣繁中短影音改編，不是官方專案，也不由上游作者維護。程式只讀本機檔案，沒有從網址自我更新的安裝流程。"
+}
