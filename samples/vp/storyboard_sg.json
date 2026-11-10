@@ -1,0 +1,15 @@
+{
+ "duration": 4,
+ "shots": [
+  {
+   "id": "open",
+   "start": 0,
+   "end": 4,
+   "on_screen": "别自介",
+   "spoken": "为什么看到第三秒就走了 leh？",
+   "asset_ids": [
+    "cam"
+   ]
+  }
+ ]
+}
